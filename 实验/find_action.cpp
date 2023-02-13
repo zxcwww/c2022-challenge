@@ -12,368 +12,19 @@ pos_2D Find_Action(int** chessboard, int chess_long, int ai_side,bool &is_start,
 		return pos;
 	}
 
-	if (which_ai == 2)
-		return Alpha_Beta_Tree_Control(chessboard, chess_long, ai_side, 5, 1);
-	if (which_ai == 12)
-		return Alpha_Beta_Tree_Dir_Control(chessboard, chess_long, ai_side,  1);
-	if (which_ai == 15)
-		return Alpha_Beta_Tree_Dir_Control(chessboard, chess_long, ai_side, 2);
-	if (which_ai == 13)
+	switch (which_ai) {
+	case 13:
 		return Alpha_Beta_Tree_Dir_Roll_Seach_Control(chessboard, chess_long, ai_side, 1, last_pos);
-	if (which_ai == 14)
+	case 14:
 		return Alpha_Beta_Tree_Dir_Roll_Seach_Control(chessboard, chess_long, ai_side, 2, last_pos);
-		
-	int best_value = -1000000000;
-	pos_2D pos;
-	for (int i = 0; i < chess_long; i++) {
-		for (int j = 0; j < chess_long; j++) {
-			if (chessboard[i][j] == 0) {
-				int value;
-				value = Find_Value_Totle(chessboard, chess_long, j, i, ai_side, which_ai);
-				
-				if (value > best_value) {
-					best_value = value;
-					pos.y = i;
-					pos.x = j;
-				}
-			}
-		}
+	case 15:
+		return Alpha_Beta_Tree_Dir_Roll_Seach_Control(chessboard, chess_long, ai_side, 3, last_pos);
+	default:
+		return Alpha_Beta_Tree_Dir_Roll_Seach_Control(chessboard, chess_long, ai_side, 1, last_pos);
+
 	}
 
-	if (best_value == -1000000000) {
-		for (int i = 0; i < chess_long; i++) {
-			for (int j = 0; j < chess_long; j++) {
-				if (chessboard[i][j]==0) {
-					pos.y = i;
-					pos.x = j;
-				}
-			}
-		}
-	}
-	//bug,如果棋盘满了，会爆炸
-		return pos;
 	
-}
-pos_2D Alpha_Beta_Tree_Control(int** chessboard, int chess_long, int ai_side, int which_ai, int deep_of_tree) {
-	pos_2D pos;
-	const int MAX = 1000000000, MIN = -1000000000;
-	int max_now = MIN, min_now = MAX;
-
-	for (int i = 0; i < chess_long; i++) {
-		for (int j = 0; j < chess_long; j++) {
-			if (chessboard[i][j] == 0) {
-				
-				chessboard[i][j] = ai_side;
-
-				int value =
-					Alpha_Beta_Tree
-					(chessboard, chess_long, ai_side, which_ai, deep_of_tree - 1, false,
-						max_now);
-				chessboard[i][j] = 0;
-				if (value > max_now) {
-					max_now = value;
-					pos.x = j;
-					pos.y = i;
-					
-				}
-
-			}
-		}
-
-	}
-
-	return pos;
-}
-
-int Alpha_Beta_Tree(int** chessboard, int chess_long, int ai_side, int which_ai,int deep_of_tree,bool is_max_side,int now_value) {
-	const int MAX = 1000000000, MIN = -1000000000;
-
-	int max_now = MIN, min_now = MAX;
-
-	//当前层级结论的最大，最小值
-
-	//这一个节点是求最大的，上一个节点是求最小的，若该节点的子节点中有超过最小的，该节点也会超，该节点会无效，终止遍历
-	if (is_max_side) {
-		min_now = now_value;
-
-	}
-	//这一个节点是求最小的，上一个节点是求最大的，若该节点的子节点中有小过最小的，该节点也会小过最小，该节点会无效，终止遍历
-	else {
-		max_now = now_value;
-
-	}
-	
-	if (deep_of_tree == 0) {
-		if (is_max_side) {
-			for (int i = 0; i < chess_long; i++) {
-				for (int j = 0; j < chess_long; j++) {
-					if (chessboard[i][j] == 0) {
-						chessboard[i][j] = ai_side;
-						int value = Find_Value_Totle(chessboard,  chess_long,  j,  i,  ai_side,  which_ai);
-						chessboard[i][j] = 0;
-						if (value > max_now) {
-							max_now = value;
-
-							if (min_now <= max_now) {
-								return min_now;
-							}
-						}
-						
-					}
-				}
-
-			}
-			return max_now;
-		}
-		else {
-			for (int i = 0; i < chess_long; i++) {
-				for (int j = 0; j < chess_long; j++) {
-					if (chessboard[i][j] == 0) {
-						chessboard[i][j] =  3 - ai_side;
-						int value = Find_Value_Totle(chessboard, chess_long, j, i, ai_side, which_ai);
-						chessboard[i][j] = 0;
-
-						if (value < min_now) {
-							min_now = value;
-
-							if (min_now <= max_now) {
-								return max_now;
-							}
-						}
-
-					}
-				}
-
-			}
-			return min_now;
-		}
-
-	}
-	else {
-		if (is_max_side) {
-			for (int i = 0; i < chess_long; i++) {
-				for (int j = 0; j < chess_long; j++) {
-					if (chessboard[i][j] == 0) {
-						int value;
-
-						chessboard[i][j] = ai_side;
-						value =
-							Alpha_Beta_Tree
-							(chessboard, chess_long,ai_side, which_ai, deep_of_tree - 1, false,
-								max_now);
-
-						chessboard[i][j] = 0;
-						if (value > max_now) {
-							max_now = value;
-
-							if (min_now <= max_now) {
-								return min_now;
-							}
-						}
-
-					}
-				}
-
-			}
-
-		}
-
-		else {
-			for (int i = 0; i < chess_long; i++) {
-				for (int j = 0; j < chess_long; j++) {
-					if (chessboard[i][j] == 0) {
-
-						chessboard[i][j] =3- ai_side;
-						int value =
-							Alpha_Beta_Tree
-							(chessboard, chess_long, ai_side, which_ai, deep_of_tree - 1, true,
-								min_now);
-						chessboard[i][j] = 0;
-
-						if (value < min_now) {
-							min_now = value;
-
-							if (min_now <= max_now) {
-								return max_now;
-							}
-						}
-
-					}
-				}
-
-			}
-		}
-
-	}
-
-	if (is_max_side)
-		return max_now;
-	else
-		return min_now;
-}
-
-pos_2D Alpha_Beta_Tree_Dir_Control(int** chessboard, int chess_long, int ai_side, int deep_of_tree) {
-	pos_2D pos;
-	const int MAX = 1000000000, MIN = -1000000000;
-	int max_now = MIN, min_now = MAX;
-
-	for (int i = 0; i < chess_long; i++) {
-		for (int j = 0; j < chess_long; j++) {
-			if (chessboard[i][j] == 0) {
-
-				int value_here=Find_Value_Totle(chessboard, chess_long, j, i, ai_side, 6);
-
-				chessboard[i][j] = ai_side;
-
-				int value =
-					Alpha_Beta_Tree_Dir
-					(chessboard, chess_long, ai_side, deep_of_tree - 1, false,
-						max_now-value_here);
-				value += value_here;
-				chessboard[i][j] = 0;
-				if (value > max_now) {
-					max_now = value;
-					pos.x = j;
-					pos.y = i;
-
-				}
-
-			}
-		}
-
-	}
-
-	return pos;
-}
-
-int Alpha_Beta_Tree_Dir(int** chessboard, int chess_long, int ai_side, int deep_of_tree, bool is_max_side, int now_value) {
-	const int MAX = 1000000000, MIN = -1000000000;
-
-	int max_now = MIN, min_now = MAX;
-
-	//当前层级结论的最大，最小值
-
-	//这一个节点是求最大的，上一个节点是求最小的，若该节点的子节点中有超过最小的，该节点也会超，该节点会无效，终止遍历
-	if (is_max_side) {
-		min_now = now_value;
-
-	}
-	//这一个节点是求最小的，上一个节点是求最大的，若该节点的子节点中有小过最小的，该节点也会小过最小，该节点会无效，终止遍历
-	else {
-		max_now = now_value;
-
-	}
-
-	if (deep_of_tree == 0) {
-		if (is_max_side) {
-			for (int i = 0; i < chess_long; i++) {
-				for (int j = 0; j < chess_long; j++) {
-					if (chessboard[i][j] == 0) {
-						int value = Find_Value_Totle(chessboard, chess_long, j, i, ai_side, 6);
-						if (value > max_now) {
-							max_now = value;
-
-							if (min_now <= max_now) {
-								return min_now;
-							}
-						}
-
-					}
-				}
-
-			}
-			return max_now;
-		}
-		else {
-			for (int i = 0; i < chess_long; i++) {
-				for (int j = 0; j < chess_long; j++) {
-					if (chessboard[i][j] == 0) {
-						
-						int value = Find_Value_Totle(chessboard, chess_long, j, i, ai_side, 7);
-
-						if (value < min_now) {
-							min_now = value;
-
-							if (min_now <= max_now) {
-								return max_now;
-							}
-						}
-
-					}
-				}
-
-			}
-			return min_now;
-		}
-
-	}
-	else {
-		if (is_max_side) {
-			for (int i = 0; i < chess_long; i++) {
-				for (int j = 0; j < chess_long; j++) {
-					if (chessboard[i][j] == 0) {
-						
-
-						int value_here = Find_Value_Totle(chessboard, chess_long, j, i, ai_side, 6);
-
-						chessboard[i][j] = ai_side;
-
-						int value =
-							Alpha_Beta_Tree_Dir
-							(chessboard, chess_long, ai_side, deep_of_tree - 1, false,
-								max_now - value_here);
-						value += value_here;
-						if (value > max_now) {
-							max_now = value;
-
-							if (min_now <= max_now) {
-								return min_now;
-							}
-						}
-
-					}
-				}
-
-			}
-
-		}
-
-		else {
-			for (int i = 0; i < chess_long; i++) {
-				for (int j = 0; j < chess_long; j++) {
-					if (chessboard[i][j] == 0) {
-						int value_here = Find_Value_Totle(chessboard, chess_long, j, i, ai_side, 7);
-
-						chessboard[i][j] = 3-ai_side;
-
-						int value =
-							Alpha_Beta_Tree_Dir
-							(chessboard, chess_long, ai_side, deep_of_tree - 1, true,
-								min_now - value_here);
-						value += value_here;
-
-						chessboard[i][j] = 0;
-
-						if (value < min_now) {
-							min_now = value;
-
-							if (min_now <= max_now) {
-								return max_now;
-							}
-						}
-
-					}
-				}
-
-			}
-		}
-
-	}
-
-	if (is_max_side)
-		return max_now;
-	else
-		return min_now;
 }
 
 pos_2D Alpha_Beta_Tree_Dir_Roll_Seach_Control(int** chessboard, int chess_long, int ai_side, int deep_of_tree,pos_2D last_pos) {
@@ -449,13 +100,13 @@ void Alpha_Beta_Tree_Check_Value_Unit_Control(int** chessboard, int chess_long, 
 	if (chessboard[y][x] == 0) {
 
 		int value_here = Find_Value_Totle(chessboard, chess_long, x, y, ai_side, 6);
-		chessboard[y][x] = ai_side;
+		Change_Chessboard(y, x, ai_side, chessboard);
 		int value =
 			Alpha_Beta_Tree_Dir_Roll_Seach
 			(chessboard, chess_long, ai_side, deep_of_tree - 1, false,
 				max_now - value_here, last_pos);
 		value += value_here;
-		chessboard[y][x] = 0;
+		Change_Chessboard(y, x, 0, chessboard);
 		if (value > max_now) {
 			max_now = value;
 			pos.x = x;
@@ -603,14 +254,14 @@ void Alpha_Beta_Tree_Dir_Roll_Seach_Unit(int** chessboard, int chess_long, int a
 
 				int value_here = Find_Value_Totle(chessboard, chess_long, j, i, ai_side, 6);
 
-				chessboard[i][j] = ai_side;
+				Change_Chessboard(i, j, ai_side, chessboard);
 
 				int value =
 					Alpha_Beta_Tree_Dir_Roll_Seach
 					(chessboard, chess_long, ai_side, deep_of_tree - 1, false,
 						max_now - value_here, last_pos);
 				value += value_here;
-				chessboard[i][j] = 0;
+				Change_Chessboard(i, j, 0, chessboard);
 
 				if (value > max_now) {
 					max_now = value;
@@ -628,8 +279,8 @@ void Alpha_Beta_Tree_Dir_Roll_Seach_Unit(int** chessboard, int chess_long, int a
 
 			if (chessboard[i][j] == 0) {
 				int value_here = Find_Value_Totle(chessboard, chess_long, j, i, ai_side, 7);
+				Change_Chessboard(i, j,3- ai_side, chessboard);
 
-				chessboard[i][j] = 3 - ai_side;
 
 				int value =
 					Alpha_Beta_Tree_Dir_Roll_Seach
@@ -637,7 +288,7 @@ void Alpha_Beta_Tree_Dir_Roll_Seach_Unit(int** chessboard, int chess_long, int a
 						min_now - value_here,last_pos);//mark
 				value += value_here;
 
-				chessboard[i][j] = 0;
+				Change_Chessboard(i, j, 0, chessboard);
 
 				if (value < min_now) {
 					min_now = value;
@@ -662,53 +313,26 @@ int Find_Value_Totle(int** chessboard, int chess_long, int x, int y, int ai_side
 	int value=0;
 	switch (type)
 	{
-	case 0:
-		return (Find_Value(chessboard, chess_long, x, y, ai_side) + Find_Value(chessboard, chess_long, x, y, 3 - ai_side));
-	case 1:
-		return  (Find_Value(chessboard, chess_long, x, y, ai_side) + Find_Value(chessboard, chess_long, x, y, 3 - ai_side) / 2);
-	
-	case 3:
-
-		chessboard[y][x] = ai_side;
-		value += Find_Sum_Value(chessboard, chess_long, ai_side);
-		value -= Find_Sum_Value(chessboard, chess_long, 3 - ai_side);
-		chessboard[y][x] = 0;
-
-
-		return value;
-	case 4:
-		chessboard[y][x] = ai_side;
-		value += Find_Sum_Value(chessboard, chess_long, ai_side);
-		value -= Find_Sum_Value(chessboard, chess_long, 3 - ai_side)*20 ;
-		chessboard[y][x] = 0;
-		return value;
-	case 5:
-		value += Find_Sum_Value(chessboard, chess_long, ai_side);
-		value -= Find_Sum_Value(chessboard, chess_long, 3 - ai_side);
-		return value;
-
-	//A看A
 	case 6:
-		value -= (Find_Value_Dir(chessboard, chess_long, x, y, ai_side) - Find_Value_Dir(chessboard, chess_long, x, y, 3 - ai_side));
-		chessboard[y][x] = ai_side;
-		value += (Find_Value_Dir(chessboard, chess_long, x, y, ai_side) - Find_Value_Dir(chessboard, chess_long, x, y, 3 - ai_side));
+		//A看A
+		if (ai_side == 1) {
+			return Load_Value_for_1(y, x, 1, chessboard);
+		}
+		else 
+		return Load_Value_for_2(y, x, 1, chessboard);
 
-		chessboard[y][x] = 0;
-
-		return value;
-
-	//B看A
+		
 
 	case 7:
-		value -= (Find_Value_Dir(chessboard, chess_long, x, y, ai_side) - Find_Value_Dir(chessboard, chess_long, x, y, 3 - ai_side));
-		chessboard[y][x] =3- ai_side;
-		value += (Find_Value_Dir(chessboard, chess_long, x, y, ai_side) - Find_Value_Dir(chessboard, chess_long, x, y, 3 - ai_side));
-
-		chessboard[y][x] = 0;
-
-		return value;
+		//B看A
+		if (ai_side == 1) {
+		return -Load_Value_for_2(y, x, 1, chessboard);
+	}
+		  else
+		return -Load_Value_for_1(y, x, 1, chessboard);
+	
 	default:
-		return (Find_Value(chessboard, chess_long, x, y, ai_side) + Find_Value(chessboard, chess_long, x, y, 3 - ai_side));
+		return 0;
 	}
 
 	

@@ -13,10 +13,11 @@
 void Ai_Player_Play(int ai_1);
 void Player_Ai_Play(int ai_1);
 void Two_Ai_Play(int ai_1, int ai_2);
+void CMD_Input();
 const int chess_long = 15;
- int ai_side = 2, player_side = 1;
- pos_2D last_pos={8,8};
-int** test;
+int ai_side = 2, player_side = 1;
+pos_2D last_pos={8,8};
+int** chessboard_p;
 int chessboard[chess_long][chess_long] = {
 
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -39,29 +40,45 @@ int chessboard[chess_long][chess_long] = {
 
 bool is_start = false;
 
-void Tset_Time() {
-    for (int i = 0; i < 100; i++) {
 
-    }
-}
 int main()
 {
-   
-
-
-     test = (int**)malloc(sizeof(int*) * chess_long);
-    for (int i = 0; i < chess_long; i++) {
-        test[i] = chessboard[i];
-    }
-    // int value=Find_Value(test, chess_long, 1, 0, -1);
-     //pos_2D pos =Find_Action(test, chess_long, 1, is_start,0);
-    //printf("%d", Find_Sum_Value(test,chess_long,1));
+  // Save_Value();
     
-   //  printf("%d,%d", pos.y,pos.x);
-    Show_Arrow_2D(test, chess_long);
-     Player_Ai_Play(14);
+    /*
+    int save_[11] = { 0,0,0,0,0 ,0, 1,1,1,1,0,};
+    int save_roll = -Find_Value_Dir_Unit_test_for_1(save_, 11, 5, 1);
+    save_roll -= Find_Value_Dir_Unit_test_for_1(save_, 11, 5, -1);
+    save_roll += Find_Value_Dir_Unit_test_for_2(save_, 11, 5, 1);
+    save_roll +=Find_Value_Dir_Unit_test_for_2(save_, 11, 5, -1)
+        ;
+    save_[5] = 1;
+    save_roll += Find_Value_Dir_Unit_test_for_1(save_, 11, 5, 1) + Find_Value_Dir_Unit_test_for_1(save_, 11, 5, -1)
+        - Find_Value_Dir_Unit_test_for_2(save_, 11, 5, 1) - Find_Value_Dir_Unit_test_for_2(save_, 11, 5, -1)
+        ;
+    printf("%d", save_roll);
+    Sleep(100000);
+    */
+    Load_Value();
+
+    //int save_[10] = { 0,0,0,0,0   ,1, 1,1,1,0};
+//Test_Save(save_);
+
+//Sleep(100000);
+
+
+
+     chessboard_p = (int**)malloc(sizeof(int*) * chess_long);
+    for (int i = 0; i < chess_long; i++) {
+        chessboard_p[i] = chessboard[i];
+    }
+
+    Show_Arrow_2D(chessboard_p, chess_long);
+    
+    
+    Player_Ai_Play(15);
    
-    //  Two_Ai_Play(14,14);
+     //Two_Ai_Play(15,15);
       Sleep(100000);
 
 }
@@ -82,7 +99,7 @@ void CMD_Input() {
         printf("输入你是先手还是后手：\n1:先手\n2:后手\n3：随机\n");
         scanf_s("%d", &get_input_3);
     }
-    Show_Arrow_2D(test, chess_long);
+    Show_Arrow_2D(chessboard_p, chess_long);
 
     int ai_input = 0;
     switch (get_input_2)
@@ -128,7 +145,6 @@ void CMD_Input() {
     Sleep(100000);
 }
 
-
 void Player_Ai_Play(int ai_1 ) {
     int pause_time = 500;
 
@@ -138,22 +154,22 @@ void Player_Ai_Play(int ai_1 ) {
 
             pos_2D pos = Get_Mouse_Input(chess_long);
             if (pos.x >= 0 && pos.x < chess_long && pos.y >= 0 && pos.y < chess_long) {
-                if (test[pos.y][pos.x] == 0) {
-                    test[pos.y][pos.x] = player_side;
+                if (chessboard_p[pos.y][pos.x] == 0) {
+                    Change_Chessboard(pos.y,pos.x,player_side,chessboard_p);
 
                     Add_Chess(pos.x, pos.y, player_side, chess_long);
-                    if (Find_Win(test, chess_long, pos.x, pos.y, player_side)) {
+                    if (Find_Win(chessboard_p, chess_long, pos.x, pos.y, player_side)) {
 
                         outtextxy(10, 20, (LPCTSTR)L"You Win");
                         break;
                     }
                     Sleep(pause_time);
-                    pos_2D pos = Find_Action(test, chess_long, ai_side, is_start, ai_1, last_pos);
+                    pos_2D pos = Find_Action(chessboard_p, chess_long, ai_side, is_start, ai_1, last_pos);
 
 
-                    test[pos.y][pos.x] = ai_side;
+                    Change_Chessboard(pos.y,pos.x,ai_side,chessboard_p);
                     Add_Chess(pos.x, pos.y, ai_side, chess_long);
-                    if (Find_Win(test, chess_long, pos.x, pos.y, ai_side)) {
+                    if (Find_Win(chessboard_p, chess_long, pos.x, pos.y, ai_side)) {
                         outtextxy(10, 20, (LPCTSTR)L"Ai Win");
                         break;
                     }
@@ -169,10 +185,10 @@ void Ai_Player_Play(int ai_1) {
     is_start = true;
 
     Sleep(pause_time);
-    pos_2D pos = Find_Action(test, chess_long, ai_side, is_start, ai_1,last_pos);
+    pos_2D pos = Find_Action(chessboard_p, chess_long, ai_side, is_start, ai_1,last_pos);
 
 
-    test[pos.y][pos.x] = ai_side;
+    Change_Chessboard(pos.y,pos.x,ai_side,chessboard_p);
     Add_Chess(pos.x, pos.y, ai_side, chess_long);
     while (true) {
         if (Is_Input()) {
@@ -181,22 +197,22 @@ void Ai_Player_Play(int ai_1) {
             pos_2D pos = Get_Mouse_Input(chess_long);
             last_pos = pos;
             if (pos.x >= 0 && pos.x < chess_long && pos.y >= 0 && pos.y < chess_long) {
-                if (test[pos.y][pos.x] == 0) {
-                    test[pos.y][pos.x] = player_side;
+                if (chessboard_p[pos.y][pos.x] == 0) {
+                    Change_Chessboard(pos.y,pos.x,player_side,chessboard_p);
 
                     Add_Chess(pos.x, pos.y, player_side, chess_long);
-                    if (Find_Win(test, chess_long, pos.x, pos.y, player_side)) {
+                    if (Find_Win(chessboard_p, chess_long, pos.x, pos.y, player_side)) {
 
                         outtextxy(10, 20, (LPCTSTR)L"You Win");
                         break;
                     }
                     Sleep(pause_time);
-                    pos_2D pos = Find_Action(test, chess_long, ai_side, is_start, ai_1, last_pos);
+                    pos_2D pos = Find_Action(chessboard_p, chess_long, ai_side, is_start, ai_1, last_pos);
                     last_pos = pos;
 
-                    test[pos.y][pos.x] = ai_side;
+                    Change_Chessboard(pos.y,pos.x,ai_side,chessboard_p);
                     Add_Chess(pos.x, pos.y, ai_side, chess_long);
-                    if (Find_Win(test, chess_long, pos.x, pos.y, ai_side)) {
+                    if (Find_Win(chessboard_p, chess_long, pos.x, pos.y, ai_side)) {
                         outtextxy(10, 20, (LPCTSTR)L"Ai Win");
                         break;
                     }
@@ -217,20 +233,20 @@ void Two_Ai_Play(int ai_1 , int ai_2 ) {
     while (true) {
        
         Sleep(pause_time);
-        pos_2D pos = Find_Action(test, chess_long, player_side, is_start, ai_1, last_pos);
+        pos_2D pos = Find_Action(chessboard_p, chess_long, player_side, is_start, ai_1, last_pos);
         last_pos = pos;
-        test[pos.y][pos.x] = player_side;
+        Change_Chessboard(pos.y,pos.x,player_side,chessboard_p);
         Add_Chess(pos.x, pos.y, player_side, chess_long);
-        if (Find_Win(test, chess_long, pos.x, pos.y, player_side)) {
+        if (Find_Win(chessboard_p, chess_long, pos.x, pos.y, player_side)) {
             outtextxy(10, 20, (LPCTSTR)L"Ai_1 Win");
             break;
         }
                     Sleep(pause_time);
-                    pos = Find_Action(test, chess_long, ai_side, is_start, ai_2, last_pos);
+                    pos = Find_Action(chessboard_p, chess_long, ai_side, is_start, ai_2, last_pos);
                     last_pos = pos;
-                    test[pos.y][pos.x] = ai_side;
+                    Change_Chessboard(pos.y,pos.x,ai_side,chessboard_p);
                     Add_Chess(pos.x, pos.y, ai_side, chess_long);
-                    if (Find_Win(test, chess_long, pos.x, pos.y, ai_side)) {
+                    if (Find_Win(chessboard_p, chess_long, pos.x, pos.y, ai_side)) {
                         outtextxy(10, 20, (LPCTSTR)L"Ai_2 Win");
                         break;
                     }
