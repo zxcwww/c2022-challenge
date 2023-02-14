@@ -2,7 +2,7 @@
 #include < stdlib.h >
 #include<stdio.h>
 #include<Windows.h>
-
+#include <io.h>
 #include<graphics.h>
 
 #include"find_value.h"
@@ -43,30 +43,13 @@ bool is_start = false;
 
 int main()
 {
-  // Save_Value();
-    
-    /*
-    int save_[11] = { 0,0,0,0,0 ,0, 1,1,1,1,0,};
-    int save_roll = -Find_Value_Dir_Unit_test_for_1(save_, 11, 5, 1);
-    save_roll -= Find_Value_Dir_Unit_test_for_1(save_, 11, 5, -1);
-    save_roll += Find_Value_Dir_Unit_test_for_2(save_, 11, 5, 1);
-    save_roll +=Find_Value_Dir_Unit_test_for_2(save_, 11, 5, -1)
-        ;
-    save_[5] = 1;
-    save_roll += Find_Value_Dir_Unit_test_for_1(save_, 11, 5, 1) + Find_Value_Dir_Unit_test_for_1(save_, 11, 5, -1)
-        - Find_Value_Dir_Unit_test_for_2(save_, 11, 5, 1) - Find_Value_Dir_Unit_test_for_2(save_, 11, 5, -1)
-        ;
-    printf("%d", save_roll);
-    Sleep(100000);
-    */
-    Load_Value();
+    if (_access("file.txt", 4) != 0) {
+        Save_Value();
+    }
+    else {
+        Load_Value();
 
-    //int save_[10] = { 0,0,0,0,0   ,1, 1,1,1,0};
-//Test_Save(save_);
-
-//Sleep(100000);
-
-
+    }
 
      chessboard_p = (int**)malloc(sizeof(int*) * chess_long);
     for (int i = 0; i < chess_long; i++) {
@@ -76,10 +59,10 @@ int main()
     Show_Arrow_2D(chessboard_p, chess_long);
     
     
-    Player_Ai_Play(15);
+    //Player_Ai_Play(15);
    
-     //Two_Ai_Play(15,15);
-      Sleep(100000);
+     Two_Ai_Play(15,15);
+      Sleep(1000000);
 
 }
 
