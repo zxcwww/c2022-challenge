@@ -3,7 +3,9 @@
 //{value,need_to_read,chees[need_to_read]}
 
 const int POWER_OF_4[11] = {1, 4,16,64,256,1024,4096,16384 ,65536,262144,1048576};
-int save_roll[1048576];
+int save_value[1048576];
+int save_value_for_find_road[1048576];
+
 int sub_chessboard_for_1[25][25] = {
     {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
     {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
@@ -85,19 +87,20 @@ int value_type[22][10] = {
 };
 int value_type_back[22][10] = {
     //5
-    {20000000,5,2,2,2,2,2},
+    {10000000,5,2,2,2,2,2},
     //t4
-    {2000000,6,0,2,2,2,2,0},
+    {500000,6,0,2,2,2,2,0},
     //t3,f4
-    {20000,6,0,2,2,2,0,0},{20000,6,0,2,2,0,2,0} ,
-    {20000,6,1,2,2,2,2,0}, {20000,5,2,2,2,0,2}, {20000,5,2,2,0,2,2}, 
+    {10000,6,0,2,2,2,0,0},{10000,6,0,2,2,0,2,0} ,
+    {10000,6,1,2,2,2,2,0}, {10000,5,2,2,2,0,2}, {5000,5,2,2,0,2,2},
 
 
     //t2,f3
-    {2000,5,0,0,2,2,0},{2000,6,0,2,0,2,0},{2000,6,0,2,0,0,2,0},
-    {2000,6,1,2,2,2,0,0},{2000,6,1,2,0,2,2,0},{2000,6,1,2,2,0,2,0},{2000,6,1,2,2,0,2,0},{2000,6,1,2,2,0,0,2},
+    {1000,5,0,0,2,2,0},
+    {1000,6,1,2,2,2,0,0},{1000,6,1,2,0,2,2,0},{1000,6,1,2,2,0,2,0},{1000,6,1,2,2,0,2,0},{1000,6,1,2,2,0,0,2},
+    {500,6,0,2,0,2,0},{500,6,0,2,0,0,2,0},
     //f1
-    {200,6,1,2,2,0,0,0},{200,6,1,2,0,2,0,0},{200,6,1,2,0,0,2,0},{200,6,1,2,0,0,0,2},
+    {100,6,1,2,2,0,0,0},{100,6,1,2,0,2,0,0},{100,6,1,2,0,0,2,0},{100,6,1,2,0,0,0,2},
 
 };
 
@@ -125,11 +128,11 @@ void Save_Value() {
                                     for ( save_[9] = 0; save_[9] < 4; save_[9]++) {
                                         for ( save_[10] = 0; save_[10] < 4; save_[10]++) {
                                             save_[5] = 0;
-                                            save_roll[mark] = -Find_Value_Dir_Unit_test_for_1(save_, 11, 5, 1)- Find_Value_Dir_Unit_test_for_1(save_, 11, 5, -1)
+                                            save_value[mark] = -Find_Value_Dir_Unit_test_for_1(save_, 11, 5, 1)- Find_Value_Dir_Unit_test_for_1(save_, 11, 5, -1)
                                                 + Find_Value_Dir_Unit_test_for_2(save_, 11, 5, 1) + Find_Value_Dir_Unit_test_for_2(save_, 11, 5, -1)
                                                 ;
                                             save_[5] = 1;
-                                            save_roll[mark] += Find_Value_Dir_Unit_test_for_1(save_, 11, 5, 1) + Find_Value_Dir_Unit_test_for_1(save_, 11, 5, -1)
+                                            save_value[mark] += Find_Value_Dir_Unit_test_for_1(save_, 11, 5, 1) + Find_Value_Dir_Unit_test_for_1(save_, 11, 5, -1)
                                                 - Find_Value_Dir_Unit_test_for_2(save_, 11, 5, 1) - Find_Value_Dir_Unit_test_for_2(save_, 11, 5, -1)
                                                 ;
                                             mark++;
@@ -147,12 +150,58 @@ void Save_Value() {
     FILE* fp_s = NULL;
 
 
-    errno_t err = fopen_s(&fp_s, "file.txt", "wb");
+    errno_t err = fopen_s(&fp_s, "save_value.txt", "wb");
 
-    fwrite(save_roll, sizeof(int), POWER_OF_4[10], fp_s);
+    fwrite(save_value, sizeof(int), POWER_OF_4[10], fp_s);
     fclose(fp_s);
 
    
+
+}
+void Save_Value_For_Find_Road() {
+    int mark = 0;
+    int save_[11];
+
+
+    for (save_[0] = 0; save_[0] < 4; save_[0]++) {
+        for (save_[1] = 0; save_[1] < 4; save_[1]++) {
+            for (save_[2] = 0; save_[2] < 4; save_[2]++) {
+                for (save_[3] = 0; save_[3] < 4; save_[3]++) {
+                    for (save_[4] = 0; save_[4] < 4; save_[4]++) {
+                        for (save_[6] = 0; save_[6] < 4; save_[6]++) {
+                            for (save_[7] = 0; save_[7] < 4; save_[7]++) {
+                                for (save_[8] = 0; save_[8] < 4; save_[8]++) {
+                                    for (save_[9] = 0; save_[9] < 4; save_[9]++) {
+                                        for (save_[10] = 0; save_[10] < 4; save_[10]++) {
+                                            save_[5] = 2;
+                                            save_value_for_find_road[mark] = -Find_Value_Dir_Unit_test_for_1(save_, 11, 5, 1) - Find_Value_Dir_Unit_test_for_1(save_, 11, 5, -1)
+                                                + Find_Value_Dir_Unit_test_for_2(save_, 11, 5, 1) + Find_Value_Dir_Unit_test_for_2(save_, 11, 5, -1)
+                                                ;
+                                            save_[5] = 1;
+                                            save_value_for_find_road[mark] += Find_Value_Dir_Unit_test_for_1(save_, 11, 5, 1) + Find_Value_Dir_Unit_test_for_1(save_, 11, 5, -1)
+                                                - Find_Value_Dir_Unit_test_for_2(save_, 11, 5, 1) - Find_Value_Dir_Unit_test_for_2(save_, 11, 5, -1)
+                                                ;
+                                            mark++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    FILE* fp_s = NULL;
+
+
+    errno_t err = fopen_s(&fp_s, "save_value_for_find_road.txt", "wb");
+
+    fwrite(save_value_for_find_road, sizeof(int), POWER_OF_4[10], fp_s);
+    fclose(fp_s);
+
+
 
 }
 void Load_Value() {
@@ -160,24 +209,20 @@ void Load_Value() {
     FILE* fp_s = NULL;
 
 
-    errno_t err = fopen_s(&fp_s, "file.txt", "rb");
+    errno_t err = fopen_s(&fp_s, "save_value.txt", "rb");
 
-    fread(save_roll, sizeof(int), POWER_OF_4[10], fp_s);
+    fread(save_value, sizeof(int), POWER_OF_4[10], fp_s);
     fclose(fp_s);
-}
-void Test_Save( int* const p) {
-    int s = 0;
-    for (int i = 0; i < 10; i++) {
-        s += p[i] * POWER_OF_4[i];
-    }   
-    printf("%d\n", s);
 
-    printf("%d", save_roll[s]);
+    err = fopen_s(&fp_s, "save_value_for_find_road.txt", "rb");
+
+    fread(save_value_for_find_road, sizeof(int), POWER_OF_4[10], fp_s);
+    fclose(fp_s);
 }
 int Load_Value_for_1(int y, int x, int chess_type, int** chessboard_p) {
     y += 5;
     x += 5;
-    return save_roll
+    return save_value
         [
             sub_chessboard_for_1[y][x + 5] * POWER_OF_4[0] +
             sub_chessboard_for_1[y][x + 4] * POWER_OF_4[1] +
@@ -190,7 +235,7 @@ int Load_Value_for_1(int y, int x, int chess_type, int** chessboard_p) {
         sub_chessboard_for_1[y][x - 4] * POWER_OF_4[8] +
         sub_chessboard_for_1[y][x - 5] * POWER_OF_4[9]
         ] +
-        save_roll
+        save_value
         [
             sub_chessboard_for_1[y+5][x + 5] * POWER_OF_4[0] +
             sub_chessboard_for_1[y+4][x + 4] * POWER_OF_4[1] +
@@ -203,7 +248,7 @@ int Load_Value_for_1(int y, int x, int chess_type, int** chessboard_p) {
         sub_chessboard_for_1[y-4][x - 4] * POWER_OF_4[8] +
         sub_chessboard_for_1[y-5][x - 5] * POWER_OF_4[9]
         ] +
-        save_roll
+        save_value
         [
             sub_chessboard_for_1[y - 5][x + 5] * POWER_OF_4[0] +
             sub_chessboard_for_1[y - 4][x + 4] * POWER_OF_4[1] +
@@ -216,7 +261,7 @@ int Load_Value_for_1(int y, int x, int chess_type, int** chessboard_p) {
         sub_chessboard_for_1[y + 4][x - 4] * POWER_OF_4[8] +
         sub_chessboard_for_1[y + 5][x - 5] * POWER_OF_4[9]
         ] +
-        save_roll
+        save_value
         [
             sub_chessboard_for_1[y + 5][x ] * POWER_OF_4[0] +
             sub_chessboard_for_1[y + 4][x ] * POWER_OF_4[1] +
@@ -234,7 +279,7 @@ int Load_Value_for_1(int y, int x, int chess_type, int** chessboard_p) {
 int Load_Value_for_2(int y, int x, int chess_type, int** chessboard_p) {
     y += 5;
     x += 5;
-    return save_roll
+    return save_value
         [
             sub_chessboard_for_2[y][x + 5] * POWER_OF_4[0] +
             sub_chessboard_for_2[y][x + 4] * POWER_OF_4[1] +
@@ -247,7 +292,7 @@ int Load_Value_for_2(int y, int x, int chess_type, int** chessboard_p) {
         sub_chessboard_for_2[y][x - 4] * POWER_OF_4[8] +
         sub_chessboard_for_2[y][x - 5] * POWER_OF_4[9]
         ] +
-        save_roll
+        save_value
         [
             sub_chessboard_for_2[y + 5][x + 5] * POWER_OF_4[0] +
             sub_chessboard_for_2[y + 4][x + 4] * POWER_OF_4[1] +
@@ -260,7 +305,7 @@ int Load_Value_for_2(int y, int x, int chess_type, int** chessboard_p) {
         sub_chessboard_for_2[y - 4][x - 4] * POWER_OF_4[8] +
         sub_chessboard_for_2[y - 5][x - 5] * POWER_OF_4[9]
         ] +
-        save_roll
+        save_value
         [
             sub_chessboard_for_2[y - 5][x + 5] * POWER_OF_4[0] +
             sub_chessboard_for_2[y - 4][x + 4] * POWER_OF_4[1] +
@@ -273,7 +318,7 @@ int Load_Value_for_2(int y, int x, int chess_type, int** chessboard_p) {
         sub_chessboard_for_2[y + 4][x - 4] * POWER_OF_4[8] +
         sub_chessboard_for_2[y + 5][x - 5] * POWER_OF_4[9]
         ] +
-        save_roll
+        save_value
         [
             sub_chessboard_for_2[y + 5][x] * POWER_OF_4[0] +
             sub_chessboard_for_2[y + 4][x] * POWER_OF_4[1] +
@@ -288,6 +333,120 @@ int Load_Value_for_2(int y, int x, int chess_type, int** chessboard_p) {
         ];
 }
 
+
+int Load_Value_for_Find_Road_1(int y, int x, int chess_type, int** chessboard_p) {
+    y += 5;
+    x += 5;
+    return save_value_for_find_road
+        [
+            sub_chessboard_for_1[y][x + 5] * POWER_OF_4[0] +
+            sub_chessboard_for_1[y][x + 4] * POWER_OF_4[1] +
+        sub_chessboard_for_1[y][x + 3] * POWER_OF_4[2] +
+        sub_chessboard_for_1[y][x + 2] * POWER_OF_4[3] +
+        sub_chessboard_for_1[y][x + 1] * POWER_OF_4[4] +
+        sub_chessboard_for_1[y][x - 1] * POWER_OF_4[5] +
+        sub_chessboard_for_1[y][x - 2] * POWER_OF_4[6] +
+        sub_chessboard_for_1[y][x - 3] * POWER_OF_4[7] +
+        sub_chessboard_for_1[y][x - 4] * POWER_OF_4[8] +
+        sub_chessboard_for_1[y][x - 5] * POWER_OF_4[9]
+        ] +
+        save_value_for_find_road
+        [
+            sub_chessboard_for_1[y + 5][x + 5] * POWER_OF_4[0] +
+            sub_chessboard_for_1[y + 4][x + 4] * POWER_OF_4[1] +
+        sub_chessboard_for_1[y + 3][x + 3] * POWER_OF_4[2] +
+        sub_chessboard_for_1[y + 2][x + 2] * POWER_OF_4[3] +
+        sub_chessboard_for_1[y + 1][x + 1] * POWER_OF_4[4] +
+        sub_chessboard_for_1[y - 1][x - 1] * POWER_OF_4[5] +
+        sub_chessboard_for_1[y - 2][x - 2] * POWER_OF_4[6] +
+        sub_chessboard_for_1[y - 3][x - 3] * POWER_OF_4[7] +
+        sub_chessboard_for_1[y - 4][x - 4] * POWER_OF_4[8] +
+        sub_chessboard_for_1[y - 5][x - 5] * POWER_OF_4[9]
+        ] +
+        save_value_for_find_road
+        [
+            sub_chessboard_for_1[y - 5][x + 5] * POWER_OF_4[0] +
+            sub_chessboard_for_1[y - 4][x + 4] * POWER_OF_4[1] +
+        sub_chessboard_for_1[y - 3][x + 3] * POWER_OF_4[2] +
+        sub_chessboard_for_1[y - 2][x + 2] * POWER_OF_4[3] +
+        sub_chessboard_for_1[y - 1][x + 1] * POWER_OF_4[4] +
+        sub_chessboard_for_1[y + 1][x - 1] * POWER_OF_4[5] +
+        sub_chessboard_for_1[y + 2][x - 2] * POWER_OF_4[6] +
+        sub_chessboard_for_1[y + 3][x - 3] * POWER_OF_4[7] +
+        sub_chessboard_for_1[y + 4][x - 4] * POWER_OF_4[8] +
+        sub_chessboard_for_1[y + 5][x - 5] * POWER_OF_4[9]
+        ] +
+        save_value_for_find_road
+        [
+            sub_chessboard_for_1[y + 5][x] * POWER_OF_4[0] +
+            sub_chessboard_for_1[y + 4][x] * POWER_OF_4[1] +
+        sub_chessboard_for_1[y + 3][x] * POWER_OF_4[2] +
+        sub_chessboard_for_1[y + 2][x] * POWER_OF_4[3] +
+        sub_chessboard_for_1[y + 1][x] * POWER_OF_4[4] +
+        sub_chessboard_for_1[y - 1][x] * POWER_OF_4[5] +
+        sub_chessboard_for_1[y - 2][x] * POWER_OF_4[6] +
+        sub_chessboard_for_1[y - 3][x] * POWER_OF_4[7] +
+        sub_chessboard_for_1[y - 4][x] * POWER_OF_4[8] +
+        sub_chessboard_for_1[y - 5][x] * POWER_OF_4[9]
+        ];
+}
+
+int Load_Value_for_Find_Road_2(int y, int x, int chess_type, int** chessboard_p) {
+    y += 5;
+    x += 5;
+    return save_value_for_find_road
+        [
+            sub_chessboard_for_2[y][x + 5] * POWER_OF_4[0] +
+            sub_chessboard_for_2[y][x + 4] * POWER_OF_4[1] +
+        sub_chessboard_for_2[y][x + 3] * POWER_OF_4[2] +
+        sub_chessboard_for_2[y][x + 2] * POWER_OF_4[3] +
+        sub_chessboard_for_2[y][x + 1] * POWER_OF_4[4] +
+        sub_chessboard_for_2[y][x - 1] * POWER_OF_4[5] +
+        sub_chessboard_for_2[y][x - 2] * POWER_OF_4[6] +
+        sub_chessboard_for_2[y][x - 3] * POWER_OF_4[7] +
+        sub_chessboard_for_2[y][x - 4] * POWER_OF_4[8] +
+        sub_chessboard_for_2[y][x - 5] * POWER_OF_4[9]
+        ] +
+        save_value_for_find_road
+        [
+            sub_chessboard_for_2[y + 5][x + 5] * POWER_OF_4[0] +
+            sub_chessboard_for_2[y + 4][x + 4] * POWER_OF_4[1] +
+        sub_chessboard_for_2[y + 3][x + 3] * POWER_OF_4[2] +
+        sub_chessboard_for_2[y + 2][x + 2] * POWER_OF_4[3] +
+        sub_chessboard_for_2[y + 1][x + 1] * POWER_OF_4[4] +
+        sub_chessboard_for_2[y - 1][x - 1] * POWER_OF_4[5] +
+        sub_chessboard_for_2[y - 2][x - 2] * POWER_OF_4[6] +
+        sub_chessboard_for_2[y - 3][x - 3] * POWER_OF_4[7] +
+        sub_chessboard_for_2[y - 4][x - 4] * POWER_OF_4[8] +
+        sub_chessboard_for_2[y - 5][x - 5] * POWER_OF_4[9]
+        ] +
+        save_value_for_find_road
+        [
+            sub_chessboard_for_2[y - 5][x + 5] * POWER_OF_4[0] +
+            sub_chessboard_for_2[y - 4][x + 4] * POWER_OF_4[1] +
+        sub_chessboard_for_2[y - 3][x + 3] * POWER_OF_4[2] +
+        sub_chessboard_for_2[y - 2][x + 2] * POWER_OF_4[3] +
+        sub_chessboard_for_2[y - 1][x + 1] * POWER_OF_4[4] +
+        sub_chessboard_for_2[y + 1][x - 1] * POWER_OF_4[5] +
+        sub_chessboard_for_2[y + 2][x - 2] * POWER_OF_4[6] +
+        sub_chessboard_for_2[y + 3][x - 3] * POWER_OF_4[7] +
+        sub_chessboard_for_2[y + 4][x - 4] * POWER_OF_4[8] +
+        sub_chessboard_for_2[y + 5][x - 5] * POWER_OF_4[9]
+        ] +
+        save_value_for_find_road
+        [
+            sub_chessboard_for_2[y + 5][x] * POWER_OF_4[0] +
+            sub_chessboard_for_2[y + 4][x] * POWER_OF_4[1] +
+        sub_chessboard_for_2[y + 3][x] * POWER_OF_4[2] +
+        sub_chessboard_for_2[y + 2][x] * POWER_OF_4[3] +
+        sub_chessboard_for_2[y + 1][x] * POWER_OF_4[4] +
+        sub_chessboard_for_2[y - 1][x] * POWER_OF_4[5] +
+        sub_chessboard_for_2[y - 2][x] * POWER_OF_4[6] +
+        sub_chessboard_for_2[y - 3][x] * POWER_OF_4[7] +
+        sub_chessboard_for_2[y - 4][x] * POWER_OF_4[8] +
+        sub_chessboard_for_2[y - 5][x] * POWER_OF_4[9]
+        ];
+}
 
 int Find_Value_Dir_Unit_test_for_1(int* chessboard, int chess_long, int x , int i) {
     int transed_chess[11];

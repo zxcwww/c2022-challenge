@@ -43,13 +43,18 @@ bool is_start = false;
 
 int main()
 {
-    if (_access("file.txt", 4) != 0) {
+    //Save_Value();
+    //Save_Value_For_Find_Road();
+    if (_access("save_value.txt", 4) != 0) {
         Save_Value();
     }
-    else {
+    if (_access("save_value_for_find_road.txt", 4) != 0) {
+            Save_Value_For_Find_Road();
+        }
+  
         Load_Value();
 
-    }
+    
 
      chessboard_p = (int**)malloc(sizeof(int*) * chess_long);
     for (int i = 0; i < chess_long; i++) {
@@ -61,7 +66,7 @@ int main()
     
     //Player_Ai_Play(15);
    
-     Two_Ai_Play(15,15);
+     Two_Ai_Play(16,16);
       Sleep(1000000);
 
 }
