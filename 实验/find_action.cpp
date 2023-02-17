@@ -1,6 +1,9 @@
 #include"find_action.h"
 
 const int POW_CHESS_LONG = 225;
+const int MIN_OF_INT = -1000000000;
+const int MAX_OF_INT = 1000000000;
+
 
 int find_win_deep;
 int start_deep;
@@ -22,10 +25,9 @@ pos_2D Find_Action(int** chessboard, int chess_long, int ai_side,bool &is_start,
 	case 15:
 		return Alpha_Beta_Tree_Dir_Roll_Seach_Control(chessboard, chess_long, ai_side, 5, last_pos);
 	case 16:
-		return Alpha_Beta_Tree_Extent_Limit_Seach_Control(chessboard, chess_long, ai_side, 5, 6,last_pos);
+		return Alpha_Beta_Tree_Extent_Limit_Seach_Control(chessboard, chess_long, ai_side, 7, 8,last_pos);
 	default:
 		return Alpha_Beta_Tree_Dir_Roll_Seach_Control(chessboard, chess_long, ai_side, 1, last_pos);
-
 	}
 
 	
@@ -48,7 +50,12 @@ void Sort_Arr_With_Need(int* arr, int* sub_arr, int arr_length, int need) {
 	}
 }
 bool Check_Win(int value) {
-	return value > 9000000 ? true : false;
+	if (value > 9000000) {
+		return true;
+	}
+	else {
+		return false;
+	}
 
 }
 void Find_Road(int** chessboard, int* sub_arr, int chess_long, int ai_side, bool is_max_side, int deep_of_tree, int extent_limit) {
@@ -68,8 +75,7 @@ void Find_Road(int** chessboard, int* sub_arr, int chess_long, int ai_side, bool
 }
 pos_2D Alpha_Beta_Tree_Extent_Limit_Seach_Control(int** chessboard, int chess_long, int ai_side, int deep_of_tree, int extent_limit,pos_2D last_pos) {
 	pos_2D pos;
-	const int MAX = 1000000000, MIN = -1000000000;
-	int max_now = MIN, min_now = MAX;
+	int max_now = MIN_OF_INT, min_now = MAX_OF_INT;
 
 	find_win_deep = -1;
 	start_deep = deep_of_tree;
@@ -87,26 +93,33 @@ pos_2D Alpha_Beta_Tree_Extent_Limit_Seach_Control(int** chessboard, int chess_lo
 		return pos;
 	}
 	else {
-		return Alpha_Beta_Tree_Extent_Limit_Seach_Control(chessboard, chess_long, ai_side, start_deep - find_win_deep, extent_limit, last_pos);
+		return pos;
+
+		//return Alpha_Beta_Tree_Extent_Limit_Seach_Control(chessboard, chess_long, ai_side, start_deep - find_win_deep, extent_limit, last_pos);
 	}
 }
 void Alpha_Beta_Tree_Extent_Limit_Check_Value_Unit_Control(int** chessboard, int chess_long, int ai_side, int deep_of_tree, int extent_limit,int& max_now, pos_2D last_pos, pos_2D& pos, int x, int y) {
 	if (chessboard[y][x] == 0) {
+		int value = 0;
 
 		int value_here = Find_Value_Totle(chessboard, chess_long, x, y, ai_side, 6, deep_of_tree);
-
-		Change_Chessboard(y, x, ai_side, chessboard);
-		int value = 0;
-		if (deep_of_tree != 0) {
-
-			value =
-				Alpha_Beta_Tree_Dir_Extent_Limit
-				(chessboard, chess_long, ai_side, deep_of_tree - 1, extent_limit,false,
-					max_now - value_here, last_pos);
-
+		if (Check_Win(value_here)) {
+			value = 20000000 * (1 + deep_of_tree);
 		}
-		value += value_here;
-		Change_Chessboard(y, x, 0, chessboard);
+		else {
+			Change_Chessboard(y, x, ai_side, chessboard);
+			if (deep_of_tree != 0) {
+
+				value =
+					Alpha_Beta_Tree_Dir_Extent_Limit
+					(chessboard, chess_long, ai_side, deep_of_tree - 1, extent_limit, false,
+						max_now - value_here, last_pos);
+
+			}
+			value += value_here;
+			Change_Chessboard(y, x, 0, chessboard);
+		}
+		
 		if (value > max_now) {
 			max_now = value;
 			pos.x = x;
@@ -120,8 +133,7 @@ void Alpha_Beta_Tree_Extent_Limit_Check_Value_Unit_Control(int** chessboard, int
 
 pos_2D Alpha_Beta_Tree_Dir_Roll_Seach_Control(int** chessboard, int chess_long, int ai_side, int deep_of_tree,pos_2D last_pos) {
 	pos_2D pos;
-	const int MAX = 1000000000, MIN = -1000000000;
-	int max_now = MIN, min_now = MAX;
+	int max_now = MIN_OF_INT, min_now = MAX_OF_INT;
 
 	find_win_deep = -1;
     start_deep = deep_of_tree;
@@ -224,9 +236,8 @@ void Alpha_Beta_Tree_Check_Value_Unit_Control(int** chessboard, int chess_long, 
 	}
 }
 int Alpha_Beta_Tree_Dir_Extent_Limit(int** chessboard, int chess_long, int ai_side, int deep_of_tree,int extent_limit, bool is_max_side, int now_value, pos_2D last_pos) {
-	const int MAX = 1000000000, MIN = -1000000000;
 
-	int max_now = MIN, min_now = MAX;
+	int max_now = MIN_OF_INT, min_now = MAX_OF_INT;
 
 	//当前层级结论的最大，最小值
 
@@ -235,7 +246,7 @@ int Alpha_Beta_Tree_Dir_Extent_Limit(int** chessboard, int chess_long, int ai_si
 		min_now = now_value;
 
 	}
-	//这一个节点是求最小的，上一个节点是求最大的，若该节点的子节点中有小过最小的，该节点也会小过最小，该节点会无效，终止遍历
+	//这一个节点是求最小的，上一个节点是求最大的，若该节点的子节点中有小过最大的，该节点也会小过最大，该节点会无效，终止遍历
 	else {
 		max_now = now_value;
 
@@ -249,7 +260,7 @@ int Alpha_Beta_Tree_Dir_Extent_Limit(int** chessboard, int chess_long, int ai_si
 		for (int i = 0; i < extent_limit; i++) {
 			bool need_return = false;
 			Alpha_Beta_Tree_Dir_Extent_Limit_Unit(chessboard, chess_long, ai_side,
-				deep_of_tree,extent_limit, is_max_side, max_now, min_now, last_pos, sub_arr[i] % chess_long, sub_arr[i] / chess_long, need_return);
+				deep_of_tree,extent_limit, is_max_side, max_now, min_now, last_pos, sub_arr[i] /chess_long, sub_arr[i] % chess_long, need_return);
 			if (need_return)
 				return is_max_side ? min_now : max_now;
 		}
@@ -330,9 +341,8 @@ int Alpha_Beta_Tree_Dir_Extent_Limit(int** chessboard, int chess_long, int ai_si
 
 }
 int Alpha_Beta_Tree_Dir_Roll_Seach(int** chessboard, int chess_long, int ai_side, int deep_of_tree, bool is_max_side, int now_value,pos_2D last_pos) {
-	const int MAX = 1000000000, MIN = -1000000000;
 
-	int max_now = MIN, min_now = MAX;
+	int max_now = MIN_OF_INT, min_now = MAX_OF_INT;
 
 	//当前层级结论的最大，最小值
 
@@ -421,26 +431,30 @@ int Alpha_Beta_Tree_Dir_Roll_Seach(int** chessboard, int chess_long, int ai_side
 }
 
 
-
-void Alpha_Beta_Tree_Dir_Extent_Limit_Unit(int** chessboard, int chess_long, int ai_side, int deep_of_tree, int extent_limit, bool is_max_side, int& max_now, int& min_now, pos_2D last_pos, int i, int j, bool& need_retun) {
+void Alpha_Beta_Tree_Dir_Extent_Limit_Unit(int** chessboard, int chess_long, int ai_side, int deep_of_tree, int extent_limit, bool is_max_side, int& max_now, int& min_now, pos_2D last_pos, int y, int x, bool& need_retun) {
 
 	
 		if (is_max_side) {
 
-			if (chessboard[i][j] == 0) {
+			if (chessboard[y][x] == 0) {
+				int value=0;
 
+				int value_here = Find_Value_Totle(chessboard, chess_long, x, y, ai_side, 6, deep_of_tree);
+				if (Check_Win(value_here)) {
+					value = 20000000 * (1 + deep_of_tree);
+				}
+				else {
 
-				int value_here = Find_Value_Totle(chessboard, chess_long, j, i, ai_side, 6, deep_of_tree);
+					Change_Chessboard(y, x, ai_side, chessboard);
 
-				Change_Chessboard(i, j, ai_side, chessboard);
+					value =
+						Alpha_Beta_Tree_Dir_Extent_Limit
+						(chessboard, chess_long, ai_side, deep_of_tree - 1, extent_limit, false,
+							max_now - value_here, last_pos);
+					value += value_here;
+					Change_Chessboard(y, x, 0, chessboard);
 
-				int value =
-					Alpha_Beta_Tree_Dir_Extent_Limit
-					(chessboard, chess_long, ai_side, deep_of_tree - 1, extent_limit, false,
-						max_now - value_here, last_pos);
-				value += value_here;
-				Change_Chessboard(i, j, 0, chessboard);
-
+				}
 				if (value > max_now) {
 					max_now = value;
 
@@ -455,19 +469,24 @@ void Alpha_Beta_Tree_Dir_Extent_Limit_Unit(int** chessboard, int chess_long, int
 
 		else {
 
-			if (chessboard[i][j] == 0) {
-				int value_here = Find_Value_Totle(chessboard, chess_long, j, i, ai_side, 7, deep_of_tree);
-				Change_Chessboard(i, j, 3 - ai_side, chessboard);
+			if (chessboard[y][x] == 0) {
+				int value = 0;
+				int value_here = Find_Value_Totle(chessboard, chess_long, x, y, ai_side, 7, deep_of_tree);
+				if (Check_Win(-value_here)) {
+					value = -20000000 * (1 + deep_of_tree);
+				}
+				else {
+					Change_Chessboard(y, x, 3 - ai_side, chessboard);
 
 
-				int value = 
-				Alpha_Beta_Tree_Dir_Extent_Limit
-					(chessboard, chess_long, ai_side, deep_of_tree - 1, extent_limit, true,
-						min_now - value_here, last_pos);//mark
-				value += value_here;
+					 value =
+						Alpha_Beta_Tree_Dir_Extent_Limit
+						(chessboard, chess_long, ai_side, deep_of_tree - 1, extent_limit, true,
+							min_now - value_here, last_pos);//mark
+					value += value_here;
 
-				Change_Chessboard(i, j, 0, chessboard);
-
+					Change_Chessboard(y, x, 0, chessboard);
+				}
 				if (value < min_now) {
 					min_now = value;
 
@@ -636,12 +655,6 @@ int Find_Value_Totle(int** chessboard, int chess_long, int x, int y, int ai_side
 
 	}
 
-	if (Check_Win(value)|| Check_Win(-value)) {
-		if (deep_of_tree > find_win_deep) {
-			find_win_deep = deep_of_tree;
-
-		}
-	}
 	return value;
 }
 int Limit(int input, int min_limit, int max_limit) {

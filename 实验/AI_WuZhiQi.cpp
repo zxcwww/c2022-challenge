@@ -43,8 +43,8 @@ bool is_start = false;
 
 int main()
 {
-    //Save_Value();
-    //Save_Value_For_Find_Road();
+  //  Save_Value();
+ // Save_Value_For_Find_Road();
     if (_access("save_value.txt", 4) != 0) {
         Save_Value();
     }
@@ -64,9 +64,9 @@ int main()
     Show_Arrow_2D(chessboard_p, chess_long);
     
     
-    //Player_Ai_Play(15);
+    //Player_Ai_Play(16);
    
-     Two_Ai_Play(16,16);
+     Two_Ai_Play(14,16);
       Sleep(1000000);
 
 }
@@ -141,6 +141,8 @@ void Player_Ai_Play(int ai_1 ) {
 
 
             pos_2D pos = Get_Mouse_Input(chess_long);
+            last_pos = pos;
+
             if (pos.x >= 0 && pos.x < chess_long && pos.y >= 0 && pos.y < chess_long) {
                 if (chessboard_p[pos.y][pos.x] == 0) {
                     Change_Chessboard(pos.y,pos.x,player_side,chessboard_p);
@@ -153,6 +155,7 @@ void Player_Ai_Play(int ai_1 ) {
                     }
                     Sleep(pause_time);
                     pos_2D pos = Find_Action(chessboard_p, chess_long, ai_side, is_start, ai_1, last_pos);
+                    last_pos = pos;
 
 
                     Change_Chessboard(pos.y,pos.x,ai_side,chessboard_p);
