@@ -43,8 +43,7 @@ bool is_start = false;
 
 int main()
 {
-  //  Save_Value();
- // Save_Value_For_Find_Road();
+
     if (_access("save_value.txt", 4) != 0) {
         Save_Value();
     }
@@ -61,12 +60,8 @@ int main()
         chessboard_p[i] = chessboard[i];
     }
 
-    Show_Arrow_2D(chessboard_p, chess_long);
+    CMD_Input();
     
-    
-    //Player_Ai_Play(16);
-   
-     Two_Ai_Play(14,16);
       Sleep(1000000);
 
 }
@@ -80,11 +75,15 @@ void CMD_Input() {
 
     printf("输入你的选择：\n1:和ai对战\n2:看ai打架\n");
     scanf_s("%d", &get_input_1);
-    printf("输入难度：\n1:普通\n2：困难\n");
+    printf("输入ai_1：\n1:深度8，广度8\n2:深度10，广度8\n3:深度8，广度10\n");
     scanf_s("%d", &get_input_2);
     if (get_input_1 == 1) {
 
         printf("输入你是先手还是后手：\n1:先手\n2:后手\n3：随机\n");
+        scanf_s("%d", &get_input_3);
+    }
+    else {
+        printf("输入ai_2：\n1:深度8，广度8\n2:深度10，广度8\n3:深度8，广度10\n");
         scanf_s("%d", &get_input_3);
     }
     Show_Arrow_2D(chessboard_p, chess_long);
@@ -94,11 +93,31 @@ void CMD_Input() {
     {
 
     case 1:
-        ai_input = 13;
+        ai_input = 16;
 
         break;
     case 2:
-        ai_input = 14;
+        ai_input = 17;
+
+        break;
+    default:
+        ai_input = 18;
+
+        break;
+    }
+    int ai_input_2 = 0;
+    switch (get_input_3)
+    {
+    case 1:
+        ai_input_2 = 16;
+
+        break;
+    case 2:
+        ai_input_2 = 17;
+
+        break;
+    default:
+        ai_input_2 = 18;
 
         break;
     }
@@ -125,7 +144,7 @@ void CMD_Input() {
         }
         break;
     case 2:
-        Two_Ai_Play(ai_input, ai_input);
+        Two_Ai_Play(ai_input, ai_input_2);
         break;
     }
 

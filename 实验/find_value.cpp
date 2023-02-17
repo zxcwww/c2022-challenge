@@ -110,8 +110,6 @@ void Change_Chessboard(int y,int x,int chess_type, int** chessboard_p) {
     sub_chessboard_for_2[y + 5][x + 5] = Change_Side(chess_type);
 
 }
-
-
 void Save_Value() {
     int mark = 0;
     int save_[11];
