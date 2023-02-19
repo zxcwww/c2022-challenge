@@ -5,7 +5,6 @@
 const int POWER_OF_4[11] = {1, 4,16,64,256,1024,4096,16384 ,65536,262144,1048576};
 int save_value[1048576];
 int save_value_for_find_road[1048576];
-
 int sub_chessboard_for_1[25][25] = {
     {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
     {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
@@ -114,7 +113,7 @@ void Save_Value() {
     int mark = 0;
     int save_[11];
 
-
+    //穷举，设当前格为空，穷举当前格左五格、右五格的所有可能性（0：空格，1：黑棋，2：白棋，3：墙壁），然后记录下来。
     for ( save_[0] = 0; save_[0] < 4; save_[0]++) {
         for ( save_[1] = 0; save_[1] < 4; save_[1]++) {
             for ( save_[2] = 0; save_[2] < 4; save_[2]++) {
@@ -145,11 +144,9 @@ void Save_Value() {
         }
     }
 
+    //储存穷举结果到文件中，下次可以直接读取。
     FILE* fp_s = NULL;
-
-
     errno_t err = fopen_s(&fp_s, "save_value.txt", "wb");
-
     fwrite(save_value, sizeof(int), POWER_OF_4[10], fp_s);
     fclose(fp_s);
 
@@ -192,21 +189,13 @@ void Save_Value_For_Find_Road() {
     }
 
     FILE* fp_s = NULL;
-
-
     errno_t err = fopen_s(&fp_s, "save_value_for_find_road.txt", "wb");
-
     fwrite(save_value_for_find_road, sizeof(int), POWER_OF_4[10], fp_s);
     fclose(fp_s);
-
-
-
 }
 void Load_Value() {
 
-    FILE* fp_s = NULL;
-
-
+        FILE* fp_s = NULL;
     errno_t err = fopen_s(&fp_s, "save_value.txt", "rb");
 
     fread(save_value, sizeof(int), POWER_OF_4[10], fp_s);
@@ -217,9 +206,11 @@ void Load_Value() {
     fread(save_value_for_find_road, sizeof(int), POWER_OF_4[10], fp_s);
     fclose(fp_s);
 }
-int Load_Value_for_1(int y, int x, int chess_type, int** chessboard_p) {
+
+int Load_Value_for_1(int y, int x, int** chessboard_p) {
     y += 5;
     x += 5;
+
     return save_value
         [
             sub_chessboard_for_1[y][x + 5] * POWER_OF_4[0] +
@@ -274,7 +265,7 @@ int Load_Value_for_1(int y, int x, int chess_type, int** chessboard_p) {
         ];
 }
 
-int Load_Value_for_2(int y, int x, int chess_type, int** chessboard_p) {
+int Load_Value_for_2(int y, int x, int** chessboard_p) {
     y += 5;
     x += 5;
     return save_value
@@ -332,7 +323,7 @@ int Load_Value_for_2(int y, int x, int chess_type, int** chessboard_p) {
 }
 
 
-int Load_Value_for_Find_Road_1(int y, int x, int chess_type, int** chessboard_p) {
+int Load_Value_for_Find_Road_1(int y, int x,  int** chessboard_p) {
     y += 5;
     x += 5;
     return save_value_for_find_road
@@ -389,7 +380,7 @@ int Load_Value_for_Find_Road_1(int y, int x, int chess_type, int** chessboard_p)
         ];
 }
 
-int Load_Value_for_Find_Road_2(int y, int x, int chess_type, int** chessboard_p) {
+int Load_Value_for_Find_Road_2(int y, int x, int** chessboard_p) {
     y += 5;
     x += 5;
     return save_value_for_find_road
@@ -448,6 +439,7 @@ int Load_Value_for_Find_Road_2(int y, int x, int chess_type, int** chessboard_p)
 
 int Find_Value_Dir_Unit_test_for_1(int* chessboard, int chess_long, int x , int i) {
     int transed_chess[11];
+    //若为墙（3），当成白子（2）处理。
     for (int i = 0; i < 11; i++) {
         if (chessboard[i] == 3) {
             transed_chess[i] = 2;
@@ -456,10 +448,12 @@ int Find_Value_Dir_Unit_test_for_1(int* chessboard, int chess_long, int x , int 
             transed_chess[i] = chessboard[i];
         }
     }
+    //每一个有价值的列
     for (int row_number = 0; row_number < TYPE_CONUT; row_number++) {
-
+        //中间点是有价值列中的地第1、2，3···个
         for (int pos = 0; pos < value_type[row_number][1]; pos++) {
             int is_same = true;
+            //检查是不是每个点都符合价值列
             for (int k = -pos; k < value_type[row_number][1] - pos; k++) {
 
                     if (transed_chess[x + i * k] != value_type[row_number][2 + k + pos]) {
@@ -467,11 +461,9 @@ int Find_Value_Dir_Unit_test_for_1(int* chessboard, int chess_long, int x , int 
                         break;
                     }    
             }
-
+            //若都符合，return该价值列对应的价值
             if (is_same) {
-
                 return value_type[row_number][0];
-
             }
         }
     }
@@ -479,6 +471,7 @@ int Find_Value_Dir_Unit_test_for_1(int* chessboard, int chess_long, int x , int 
 }
 int Find_Value_Dir_Unit_test_for_2(int* chessboard, int chess_long, int x, int i) {
     int transed_chess[11];
+    //若为墙（3），当成黑子（1）处理。
     for (int i = 0; i < 11; i++) {
         if (chessboard[i] == 3) {
             transed_chess[i] = 1;
@@ -488,18 +481,15 @@ int Find_Value_Dir_Unit_test_for_2(int* chessboard, int chess_long, int x, int i
         }
     }
     for (int row_number = 0; row_number < TYPE_CONUT; row_number++) {
-
         for (int pos = 0; pos < value_type[row_number][1]; pos++) {
             int is_same = true;
             for (int k = -pos; k < value_type[row_number][1] - pos; k++) {
-         
                 if (transed_chess[x + i * k] != value_type_back[row_number][2 + k + pos]) {
                     is_same = false;
                     break;
                 }
 
             }
-
             if (is_same) {
 
                 return value_type[row_number][0];
@@ -584,3 +574,59 @@ bool Find_Win(int** chessboard, int chess_long, int x, int y, int side) {
         }
         return false;
     }
+
+int Find_Value_Totle(int** chessboard, int chess_long, int x, int y, int ai_side, int type, int deep_of_tree) {
+    int value = 0;
+    switch (type)
+    {
+    case 6:
+        //A看A
+        if (ai_side == 1) {
+            value = Load_Value_for_1(y, x, chessboard);
+        }
+        else
+            value = Load_Value_for_2(y, x, chessboard);
+        break;
+
+
+    case 7:
+        //B看A
+        if (ai_side == 1) {
+            value = -Load_Value_for_2(y, x,  chessboard);
+        }
+        else
+            value = -Load_Value_for_1(y, x, chessboard);
+        break;
+    case 8:
+        //启发式函数
+        //A看A
+        if (ai_side == 1) {
+            value = Load_Value_for_Find_Road_1(y, x,  chessboard);
+        }
+        else
+            value = Load_Value_for_Find_Road_2(y, x,  chessboard);
+        break;
+
+
+    case 9:
+        //启发式函数
+        //B看A
+        if (ai_side == 1) {
+            value = Load_Value_for_Find_Road_2(y, x,  chessboard);
+        }
+        else
+            value = Load_Value_for_Find_Road_1(y, x,  chessboard);
+        break;
+    default:
+        if (ai_side == 1) {
+            value = Load_Value_for_1(y, x,  chessboard);
+        }
+        else
+            value = Load_Value_for_2(y, x,  chessboard);
+        break;
+
+    }
+
+    return value;
+}
+

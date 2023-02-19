@@ -43,27 +43,23 @@ bool is_start = false;
 
 int main()
 {
-
+    //载入预先储存的数据（为计算棋子价值用),若找不到文件，则现场生成并储存。
     if (_access("save_value.txt", 4) != 0) {
         Save_Value();
     }
     if (_access("save_value_for_find_road.txt", 4) != 0) {
             Save_Value_For_Find_Road();
         }
-  
-        Load_Value();
-
-    
-
-     chessboard_p = (int**)malloc(sizeof(int*) * chess_long);
+    Load_Value();
+    //载入内置棋盘
+    chessboard_p = (int**)malloc(sizeof(int*) * chess_long);
     for (int i = 0; i < chess_long; i++) {
         chessboard_p[i] = chessboard[i];
     }
-
+    //玩家使用命令行输入对局的设置（先手后手等）
     CMD_Input();
-    
-      Sleep(1000000);
-
+    //让玩家在对局结束后还能查看棋盘
+    Sleep(1000000);
 }
 
 
@@ -153,30 +149,34 @@ void CMD_Input() {
 }
 
 void Player_Ai_Play(int ai_1 ) {
+    //给玩家一定反应时间，让玩家看清AI下到了哪里。
     int pause_time = 500;
-
+    //一致持续，直到找到胜利的一方：break
     while (true) {
+        //若UI_and_Input模块传入玩家输入
         if (Is_Input()) {
-
-
+            //获取玩家输入
             pos_2D pos = Get_Mouse_Input(chess_long);
+            //记录last_pos,给find_action使用
             last_pos = pos;
-
+            //如果玩家输入没有越界
             if (pos.x >= 0 && pos.x < chess_long && pos.y >= 0 && pos.y < chess_long) {
+                //若玩家输入在空的位置上
                 if (chessboard_p[pos.y][pos.x] == 0) {
+                    //记录到内置的三个棋盘中
                     Change_Chessboard(pos.y,pos.x,player_side,chessboard_p);
-
+                    //显示给玩家
                     Add_Chess(pos.x, pos.y, player_side, chess_long);
+                    //检测是否胜利
                     if (Find_Win(chessboard_p, chess_long, pos.x, pos.y, player_side)) {
-
                         outtextxy(10, 20, (LPCTSTR)L"You Win");
                         break;
                     }
                     Sleep(pause_time);
+
+                    //AI寻找最优解
                     pos_2D pos = Find_Action(chessboard_p, chess_long, ai_side, is_start, ai_1, last_pos);
                     last_pos = pos;
-
-
                     Change_Chessboard(pos.y,pos.x,ai_side,chessboard_p);
                     Add_Chess(pos.x, pos.y, ai_side, chess_long);
                     if (Find_Win(chessboard_p, chess_long, pos.x, pos.y, ai_side)) {
@@ -234,8 +234,7 @@ void Ai_Player_Play(int ai_1) {
 
     }
 
-}
-    
+}    
 void Two_Ai_Play(int ai_1 , int ai_2 ) {
     is_start = true;
  
